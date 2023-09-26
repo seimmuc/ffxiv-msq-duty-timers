@@ -1,0 +1,66 @@
+[
+  {
+    "slug": "castrum",
+    "name": "Castrum Meridianum",
+    "stages": [
+      {
+        "type": "cutscene",
+        "name": "Intro",
+        "duration": 10,
+        "color": "#f00"
+      },
+      {
+        "type": "fight",
+        "name": "Fight",
+        "subtitle": "be careful here",
+        "color": "blue"
+      },
+      {
+        "type": "cutscene",
+        "name": "Ending",
+        "color": "green",
+        "duration": 20
+      }
+    ]
+  },
+  {
+    "slug": "praetorium",
+    "name": "The Praetorium",
+    "stages": [
+      {
+        "type": "cutscene",
+        "name": "Intro",
+        "duration": 10,
+        "color": "#f00"
+      },
+      {
+        "type": "fight",
+        "name": "Fight",
+        "subtitle": "be careful here",
+        "color": "blue"
+      }
+    ]
+  },
+  {
+    "slug": "porta",
+    "name": "The Porta Decumana",
+    "stages": [
+      {
+        "type": "fight",
+        "name": "Fight 1",
+        "color": "sandybrown"
+      },
+      {
+        "type": "cutscene",
+        "name": "Interlude",
+        "duration": 270,
+        "color": "tan"
+      },
+      {
+        "type": "fight",
+        "name": "Fight 2",
+        "color": "tomato"
+      }
+    ]
+  }
+]

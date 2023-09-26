@@ -1,9 +1,17 @@
+import dutiesJson from "./duties.json";
+
 export class Duty {
   name: string;
   stages: Stage[];
   constructor(name: string) {
     this.name = name;
     this.stages = [];
+  }
+
+  static fromObject(obj: DutyObj): Duty {
+    const duty = new Duty(obj.name);
+    duty.stages = obj.stages.map(s => Stage.fromObject(s)).filter(s => s !== undefined) as Stage[];
+    return duty;
   }
 }
 
@@ -31,6 +39,14 @@ export abstract class Stage {
     }
     if (this.color?.match(/^[a-z]+$/)) {
       return this.color;
+    }
+  }
+
+  static fromObject(obj: StageObj): Stage | undefined {
+    if (obj.type === 'cutscene') {
+      return new Cutscene(obj.name, obj.duration as number, obj.color);
+    } else if (obj.type == 'fight') {
+      return new Fight(obj.name, obj.subtitle, obj.color);
     }
   }
 }
@@ -61,17 +77,15 @@ export class Fight extends Stage {
   }
 }
 
+type StageObj = {type: 'cutscene' | 'fight', name: string, color?: string, duration?: number, subtitle?: string};
+type DutyObj = {slug: string, name: string, stages: StageObj[]};
+
 // utilities
 export function formatTime(timeInSeconds: number, millis: boolean) {
   const seconds = millis? (timeInSeconds % 60).toFixed(2) : Math.floor(timeInSeconds % 60);
   return `${Math.floor(timeInSeconds / 60)}:${seconds}`;
 }
 
-// PLACEHOLDERS
-const castrum = new Duty("Castrum Meridianum");
-const praetorium = new Duty("The Praetorium");
-castrum.stages = [new Cutscene('Intro', 10, '#f00'), new Fight('Fight', 'be careful here', 'blue'), new Cutscene('Ending', 20, 'green')]
-export const duties = {
-  castrum,
-  praetorium
-}
+// parse and export data from JSON file
+const dJson: DutyObj[] = dutiesJson as DutyObj[];
+export const duties = Object.fromEntries(dJson.map(d => [d.slug, Duty.fromObject(d)]));
