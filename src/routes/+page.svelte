@@ -1,9 +1,13 @@
 <script lang="ts">
   import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-  import { faPause, faPlay, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+  import { faPause, faPlay, faRotateLeft, faVolumeOff, faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
 
   import HScrollContainer from "$lib/HScrollContainer.svelte";
   import { Cutscene, Fight, Stage, duties, formatTime } from "$lib/duties";
+
+  import soundPingQuiet from "$lib/assets/sounds/stop-13692.mp3";
+  import soundPingLoud from "$lib/assets/sounds/notification-sound-7062.mp3";
+  // import soundPingLoud2 from "$static/assets/sounds/soft-alert-81627.mp3";
 
   let stageSelectionWidth: number = 0;
 
@@ -13,6 +17,9 @@
   let timeIntervalStartedLeft: number = 0;
   let timeIntervalStartedDate: Date | undefined = undefined;
   let timeIntervalId: number | undefined = undefined;
+  let audio = {src: "", muted: true, paused: true, currentTime: 0, volume: 1};
+  const audioSteps = [{t: 10, s: soundPingQuiet}, {t: 5, s: soundPingQuiet}, {t: 0, s: soundPingLoud}];
+  let curAudioStep = 0;
 
   function setDuty(key: string) {
     if (!duties.hasOwnProperty(key)) { return; }  // can't use 'keyof typeof duties' as param type because svelte doesn't support TS in HTML
@@ -39,24 +46,34 @@
       timeIntervalStartedDate = undefined;  // prevent updateTime() from running again
       stopTimer();
     }
+    if (timeLeft <= audioSteps[curAudioStep]?.t) {
+      if (!audio.muted) {
+        audio = {...audio, src: audioSteps[curAudioStep].s, currentTime: 0, paused: false};
+      }
+      curAudioStep++;
+    }
   }
 
-  function startTimer() {
+  function startTimer(_: boolean = false) {
     if (timeIntervalId !== undefined) { return; }
     if (timeLeft <= 0) { return; }
     timeIntervalStartedDate = new Date();
     timeIntervalStartedLeft = timeLeft;
-    timeIntervalId = setInterval(updateTime);
+    timeIntervalId = setInterval(updateTime, 40);
+    curAudioStep = audioSteps.findIndex((as) => as.t < timeLeft);
   }
-  function stopTimer() {
+  function stopTimer(click: boolean = false) {
     if (timeIntervalId === undefined) { return; }
     clearInterval(timeIntervalId);
     updateTime();
     timeIntervalStartedDate = undefined;
     timeIntervalStartedLeft = 0;
     timeIntervalId = undefined;
+    if (click) {
+      audio = {...audio, src: "", paused: true, currentTime: 0};
+    }
   }
-  const togglePause = () => (timeIntervalId === undefined ? startTimer : stopTimer)();
+  const togglePause = () => (timeIntervalId === undefined ? startTimer : stopTimer)(true);
   function resetTimer() {
     stopTimer();
     timeLeft = currentStage instanceof Cutscene ? currentStage.duration : 0;
@@ -87,7 +104,7 @@
               on:click={() => setStage(i)}
           >
             <p class="stage-title">{stage.getTitle()}</p>
-            <p class="stage-subtitle">{stage.getSubtitle()}</p>
+            <p class="stage-subtitle">{#if stage.getSubtitle()}{stage.getSubtitle()}{:else}&nbsp;{/if}</p>
           </button>
         {/each}
       </HScrollContainer>
@@ -114,6 +131,20 @@
         <button aria-label="reset" on:click={resetTimer}>
           <FontAwesomeIcon icon={faRotateLeft} />
         </button>
+        <button on:click={() => audio = {...audio, muted: !audio.muted}}>
+          {#if audio.muted}
+            <FontAwesomeIcon icon={faVolumeOff} />
+          {:else}
+            <FontAwesomeIcon icon={faVolumeHigh} />
+          {/if}
+        </button>
+        <audio
+            src={audio.src}
+            bind:muted={audio.muted}
+            bind:paused={audio.paused}
+            bind:currentTime={audio.currentTime}
+            bind:volume={audio.volume}
+        />
       </div>
     {/if}
   </div>
