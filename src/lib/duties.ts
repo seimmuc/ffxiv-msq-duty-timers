@@ -81,9 +81,10 @@ type StageObj = {type: 'cutscene' | 'fight', name: string, color?: string, durat
 type DutyObj = {slug: string, name: string, stages: StageObj[]};
 
 // utilities
-export function formatTime(timeInSeconds: number, millis: boolean) {
-  const seconds = millis? (timeInSeconds % 60).toFixed(2) : Math.floor(timeInSeconds % 60);
-  return `${Math.floor(timeInSeconds / 60)}:${seconds}`;
+const withCentis = {minimumIntegerDigits: 2, minimumFractionDigits: 2, maximumFractionDigits: 2};
+const noCentis = {minimumIntegerDigits: 2, maximumFractionDigits: 0};
+export function formatTime(timeInSeconds: number, centiseconds: boolean) {
+  return `${Math.floor(timeInSeconds / 60)}:${(timeInSeconds % 60).toLocaleString(undefined, centiseconds? withCentis : noCentis)}`;
 }
 
 // parse and export data from JSON file
