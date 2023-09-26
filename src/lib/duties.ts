@@ -44,7 +44,7 @@ export class Cutscene extends Stage {
   }
 
   getSubtitle(): string | undefined {
-    return `${Math.floor(this.duration / 60)}:${Math.floor(this.duration % 60)}`;
+    return formatTime(this.duration, false);
   }
 }
 
@@ -59,6 +59,12 @@ export class Fight extends Stage {
   getSubtitle(): string | undefined {
       return this.subtitle;
   }
+}
+
+// utilities
+export function formatTime(timeInSeconds: number, millis: boolean) {
+  const seconds = millis? (timeInSeconds % 60).toFixed(2) : Math.floor(timeInSeconds % 60);
+  return `${Math.floor(timeInSeconds / 60)}:${seconds}`;
 }
 
 // PLACEHOLDERS
