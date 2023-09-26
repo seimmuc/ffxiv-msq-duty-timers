@@ -78,6 +78,13 @@
     stopTimer();
     timeLeft = currentStage instanceof Cutscene ? currentStage.duration : 0;
   }
+  function adjustTime(amount: number) {
+    if (timeIntervalStartedDate === undefined) {
+      timeLeft += amount;
+    } else {
+      timeIntervalStartedDate = new Date(timeIntervalStartedDate.getTime() + amount * 1000);
+    }
+  }
   
   $: currentDuty = curDutyId === undefined? undefined : duties[curDutyId];
   $: currentStage = currentDuty === undefined? undefined : currentDuty.stages[curStageIndex];
@@ -121,6 +128,8 @@
     {:else}
       <p class="timer-clock" style:color={timeLeft < 10 ? 'red' : 'var(--page-fg)'}>{timeLeftFormatted}</p>
       <div class="controls" style:--sc={currentStage.getColor()}>
+        <button class="time-adjust l" on:click={() => adjustTime(-5)}>-5s</button>
+        <button class="time-adjust r" on:click={() => adjustTime(+5)}>+5s</button>
         <button class="pause" on:click={togglePause} aria-label="{timeIntervalId === undefined? 'start' : 'pause'}">
           {#if timeIntervalId === undefined}
             <FontAwesomeIcon icon={faPlay} />
@@ -226,6 +235,7 @@
       background: stage_button_background_duo(30%, false);
       user-select: none;
       font-family: inherit;
+      cursor: pointer;
       p {
         margin: 1px 10px;
       }
@@ -279,22 +289,42 @@
       font-size: 5em;
       margin: 30px 0 20px;
     }
-    button {
-      width: 60px;
-      height: 40px;
-      border: none;
-      border-radius: 40px;
-      background-color: stage_button_background(60%);
-      color: stage_button_foreground(5%);
-      font-size: 20px;
-      margin: 0 5px;
-      &:hover {
-        background-color: stage_button_background(50%);
-        color: stage_button_foreground(15%);
-      }
-      &:active {
-        background-color: stage_button_background(45%);
-        color: stage_button_foreground(25%);
+    div.controls {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      button {
+        width: 60px;
+        height: 40px;
+        border: none;
+        border-radius: 40px;
+        background-color: stage_button_background(60%);
+        color: stage_button_foreground(5%);
+        font-size: 20px;
+        margin: 0 5px;
+        padding: 0 6px;
+        cursor: pointer;
+        &:hover {
+          background-color: stage_button_background(50%);
+          color: stage_button_foreground(15%);
+        }
+        &:active {
+          background-color: stage_button_background(45%);
+          color: stage_button_foreground(25%);
+        }
+        &.l {
+          border-radius: 40px 0 0 40px;
+          margin-right: 0px;
+          padding-right: 0;
+          width: 54px;
+        }
+        &.r {
+          border-radius: 0 40px 40px 0;
+          margin-left: 0px;
+          padding-left: 0;
+          width: 54px;
+        }
       }
     }
   }
