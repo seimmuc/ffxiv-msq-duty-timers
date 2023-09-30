@@ -107,9 +107,11 @@
       z-index: 1;
       &.r {
         right: 0;
+        padding-right: 1px;
       }
       &.l {
         left: 0;
+        padding-left: 1px;
       }
     }
   }

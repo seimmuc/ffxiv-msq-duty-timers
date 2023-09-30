@@ -1,6 +1,6 @@
 <script lang="ts">
   import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
-  import { faPause, faPlay, faRotateLeft, faVolumeOff, faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
+  import { faPause, faPlay, faRotateLeft, faVolumeOff, faVolumeHigh, faBars } from "@fortawesome/free-solid-svg-icons";
 
   import HScrollContainer from "$lib/HScrollContainer.svelte";
   import { Cutscene, Fight, Stage, duties, formatTime } from "$lib/duties";
@@ -11,9 +11,11 @@
   // import soundPingLoud2 from "$static/assets/sounds/soft-alert-81627.mp3";
 
   let stageSelectionWidth: number = 0;
+  let menuRoot: HTMLLIElement | undefined = undefined;
 
   let curDutyId: keyof typeof duties | undefined = undefined;
   let curStageIndex: number = 0;
+  let filteredStages: Array<[Stage, number]> | undefined = [];
   let timeLeft: number = 0;
   let timeIntervalStartedLeft: number = 0;
   let timeIntervalStartedDate: Date | undefined = undefined;
@@ -21,6 +23,8 @@
   let audio = {src: "", muted: true, paused: true, currentTime: 0, volume: 100, pVolume: 100};
   const audioSteps = [{t: 10, s: soundPingQuiet}, {t: 5, s: soundPingQuiet}, {t: 0, s: soundPingLoud}];
   let curAudioStep = 0;
+  let menuPopupShown = false;
+  let onlyCutscenes = false;
 
   function setDuty(key: string) {
     if (!duties.hasOwnProperty(key)) { return; }  // can't use 'keyof typeof duties' as param type because svelte doesn't support TS in HTML
@@ -102,6 +106,12 @@
     lsSet('muted', 'false');
   }
 
+  function onClickAnywhere(e: MouseEvent) {
+    if (menuPopupShown && menuRoot !== undefined && e.target instanceof Node && !menuRoot.contains(e.target)) {
+      menuPopupShown = false;
+    }
+  }
+
   function lsIfExists(key: string, func: (value: string) => void) {
     let val = null;
     try {
@@ -128,7 +138,10 @@
   $: currentStage = currentDuty === undefined? undefined : currentDuty.stages[curStageIndex];
   $: timeLeftFormatted = formatTime(timeLeft, true);
   $: audioVol = Math.max(Math.min(audio.volume / 100, 1), 0);
+  $: filteredStages = currentDuty?.stages.map((s, i) => (!onlyCutscenes || s instanceof Cutscene)? [s, i] : undefined).filter(a => a != undefined) as Array<[Stage, number]> | undefined;
 </script>
+
+<svelte:window on:click={onClickAnywhere} />
 
 <main>
   <ul class="duty-list">
@@ -137,14 +150,24 @@
         <button on:click={() => setDuty(key)}>{duty.name}</button>
       </li>
     {/each}
+    <li bind:this={menuRoot} class="no-grow">
+      <button class="menu-btn" on:click={() => menuPopupShown = !menuPopupShown}><FontAwesomeIcon icon={faBars} /></button>
+      <div class="menu-popup" style:display={menuPopupShown? 'block' : 'none'}>
+        <ul>
+          <li>
+            <label><input type="checkbox" bind:checked={onlyCutscenes}>Only cutscenes</label>
+          </li>
+        </ul>
+      </div>
+    </li>
   </ul>
 
-  {#if currentDuty}
+  {#if currentDuty && filteredStages !== undefined}
     <div class="stage-selection" bind:clientWidth={stageSelectionWidth}>
       <HScrollContainer maxWidth={stageSelectionWidth || undefined} mode={2} scrollSpeed={10}
           bgl="linear-gradient(to left, transparent, var(--page-bg) 80%)" bgr="linear-gradient(to right, transparent, var(--page-bg) 80%)" fg="var(--page-fg)"
       >
-        {#each currentDuty.stages as stage, i}
+        {#each filteredStages as [stage, i]}
           <button
               class="stage-btn" class:current={i === curStageIndex} style:--sc={stage.getColor()}
               on:click={() => setStage(i)}
@@ -202,7 +225,6 @@
       </div>
     {/if}
   </div>
-  
 </main>
 
 
@@ -222,10 +244,11 @@
     @return color-mix(in xyz, var(--sc) #{$mix_percent}, var(--page-fg));
   }
 
+  $main-bradius: 10px;
+
   main {
     border: 1px solid main_outline_color(50%);
-    border-radius: 10px;
-    overflow: hidden;
+    border-radius: $main-bradius;
     margin: 2em 3.5vh;
     font-family: Arial, Helvetica, sans-serif;
   }
@@ -245,6 +268,10 @@
     align-items: stretch;
     > li {
       flex-grow: 1;
+      &.no-grow {
+        flex-grow: 0;
+        position: relative;
+      }
       > button {
         color: color-mix(in srgb, gray, var(--page-fg) 65%);
         background-color: transparent;
@@ -257,10 +284,41 @@
         &:hover {
           color: var(--page-fg);
         }
+        &.menu-btn {
+          padding: $button-vpadding;
+          background-color: main_outline_color(40%);
+        }
       }
       &.current > button {
         border-bottom: $select-border solid color-mix(in xyz, blue, var(--page-fg) 30%);
         padding-bottom: $button-vpadding - $select-border;
+      }
+      &:first-of-type > button {
+        border-top-left-radius: $main-bradius - 1px;
+      }
+      &:last-of-type > button {
+        border-top-right-radius: $main-bradius - 1px;
+      }
+    }
+  }
+
+  div.menu-popup {
+    position: absolute;
+    right: 0;
+    display: none;
+    background-color: main_outline_color(2.5%);
+    border: 1px solid main_outline_color(20%);
+    z-index: 10;
+    ul {
+      list-style: none;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: flex-start;
+      width: max-content;
+      input[type=checkbox] {
+        margin-right: 8px;
       }
     }
   }
