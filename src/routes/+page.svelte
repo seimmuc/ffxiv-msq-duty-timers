@@ -7,6 +7,7 @@
 
   import soundPingQuiet from "$lib/assets/sounds/stop-13692.mp3";
   import soundPingLoud from "$lib/assets/sounds/notification-sound-7062.mp3";
+	import { onMount } from "svelte";
   // import soundPingLoud2 from "$static/assets/sounds/soft-alert-81627.mp3";
 
   let stageSelectionWidth: number = 0;
@@ -17,7 +18,7 @@
   let timeIntervalStartedLeft: number = 0;
   let timeIntervalStartedDate: Date | undefined = undefined;
   let timeIntervalId: number | undefined = undefined;
-  let audio = {src: "", muted: false, paused: true, currentTime: 0, volume: 100, pVolume: 100};
+  let audio = {src: "", muted: true, paused: true, currentTime: 0, volume: 100, pVolume: 100};
   const audioSteps = [{t: 10, s: soundPingQuiet}, {t: 5, s: soundPingQuiet}, {t: 0, s: soundPingLoud}];
   let curAudioStep = 0;
 
@@ -93,7 +94,35 @@
     } else {
       audio = {...audio, muted: true, volume: 0, pVolume: audio.volume};
     }
+    lsSet('muted', audio.muted.toString());
   }
+  function onVolumeChange() {
+    audio = {...audio, muted: false};
+    lsSet('volume', audio.volume.toString());
+    lsSet('muted', 'false');
+  }
+
+  function lsIfExists(key: string, func: (value: string) => void) {
+    let val = null;
+    try {
+      val = window.localStorage.getItem(key);
+    } catch (_) {}
+    if (val !== null) {
+      func(val);
+    }
+  }
+  function lsSet(key: string, val: string) {
+    try {
+      window.localStorage.setItem(key, val);
+    } catch (_) {}
+  }
+  onMount(() => {
+    lsIfExists('muted', m => audio.muted = m !== 'false');
+    lsIfExists('volume', v => audio.volume = parseFloat(v));
+    if (audio.muted) {
+      audio = {...audio, volume: 0, pVolume: audio.volume};
+    }
+  });
 
   $: currentDuty = curDutyId === undefined? undefined : duties[curDutyId];
   $: currentStage = currentDuty === undefined? undefined : currentDuty.stages[curStageIndex];
@@ -159,7 +188,7 @@
             {/if}
           </button>
           <div class="volume-slider-popup">
-            <input type="range" bind:value={audio.volume} on:input={() => audio = {...audio, muted: false}} title="{`${audio.volume}`}" min=0 max=100 />
+            <input type="range" bind:value={audio.volume} on:input={onVolumeChange} min=0 max=100 />
             <span>{audio.volume}</span>
           </div>
         </div>
