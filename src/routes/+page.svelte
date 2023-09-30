@@ -154,9 +154,7 @@
       <button class="menu-btn" on:click={() => menuPopupShown = !menuPopupShown}><FontAwesomeIcon icon={faBars} /></button>
       <div class="menu-popup" style:display={menuPopupShown? 'block' : 'none'}>
         <ul>
-          <li>
-            <label><input type="checkbox" bind:checked={onlyCutscenes}>Only cutscenes</label>
-          </li>
+          <li><label><input type="checkbox" bind:checked={onlyCutscenes}><span>Only cutscenes</span></label></li>
         </ul>
       </div>
     </li>
@@ -311,14 +309,19 @@
     z-index: 10;
     ul {
       list-style: none;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
-      align-items: flex-start;
+      padding: 10px;
+      display: grid;
+      row-gap: 12px;
+      column-gap: 6px;
       width: max-content;
-      input[type=checkbox] {
-        margin-right: 8px;
+      li, label {
+        display: contents;
+      }
+      input {
+        grid-column: 1;
+      }
+      span {
+        grid-column: 2;
       }
     }
   }
