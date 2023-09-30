@@ -60,7 +60,7 @@
     timeIntervalStartedDate = new Date();
     timeIntervalStartedLeft = timeLeft;
     timeIntervalId = setInterval(updateTime, 40);
-    curAudioStep = audioSteps.findIndex((as) => as.t < timeLeft);
+    resetAudioStep();
   }
   function stopTimer(click: boolean = false) {
     if (timeIntervalId === undefined) { return; }
@@ -74,14 +74,15 @@
     }
   }
   const togglePause = () => (timeIntervalId === undefined ? startTimer : stopTimer)(true);
+  const resetAudioStep = () => { curAudioStep = audioSteps.findIndex((as) => as.t < timeLeft); };
   function resetTimer() {
     stopTimer();
     timeLeft = currentStage instanceof Cutscene ? currentStage.duration : 0;
   }
   function adjustTime(amount: number) {
-    if (timeIntervalStartedDate === undefined) {
-      timeLeft += amount;
-    } else {
+    timeLeft += amount;
+    resetAudioStep();
+    if (timeIntervalStartedDate !== undefined) {
       timeIntervalStartedDate = new Date(timeIntervalStartedDate.getTime() + amount * 1000);
     }
   }
