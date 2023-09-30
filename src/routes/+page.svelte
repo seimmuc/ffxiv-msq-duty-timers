@@ -112,7 +112,7 @@
 
   {#if currentDuty}
     <div class="stage-selection" bind:clientWidth={stageSelectionWidth}>
-      <HScrollContainer maxWidth={stageSelectionWidth || undefined} mode={2}
+      <HScrollContainer maxWidth={stageSelectionWidth || undefined} mode={2} scrollSpeed={10}
           bgl="linear-gradient(to left, transparent, var(--page-bg) 80%)" bgr="linear-gradient(to right, transparent, var(--page-bg) 80%)" fg="var(--page-fg)"
       >
         {#each currentDuty.stages as stage, i}
