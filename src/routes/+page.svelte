@@ -17,7 +17,7 @@
   let timeIntervalStartedLeft: number = 0;
   let timeIntervalStartedDate: Date | undefined = undefined;
   let timeIntervalId: number | undefined = undefined;
-  let audio = {src: "", muted: true, paused: true, currentTime: 0, volume: 1};
+  let audio = {src: "", muted: false, paused: true, currentTime: 0, volume: 100, pVolume: 100};
   const audioSteps = [{t: 10, s: soundPingQuiet}, {t: 5, s: soundPingQuiet}, {t: 0, s: soundPingLoud}];
   let curAudioStep = 0;
 
@@ -85,10 +85,19 @@
       timeIntervalStartedDate = new Date(timeIntervalStartedDate.getTime() + amount * 1000);
     }
   }
-  
+
+  function toggleMute() {
+    if (audio.muted) {
+      audio = {...audio, muted: false, volume: audio.pVolume};
+    } else {
+      audio = {...audio, muted: true, volume: 0, pVolume: audio.volume};
+    }
+  }
+
   $: currentDuty = curDutyId === undefined? undefined : duties[curDutyId];
   $: currentStage = currentDuty === undefined? undefined : currentDuty.stages[curStageIndex];
   $: timeLeftFormatted = formatTime(timeLeft, true);
+  $: audioVol = Math.max(Math.min(audio.volume / 100, 1), 0);
 </script>
 
 <main>
@@ -140,19 +149,25 @@
         <button aria-label="reset" on:click={resetTimer}>
           <FontAwesomeIcon icon={faRotateLeft} />
         </button>
-        <button on:click={() => audio = {...audio, muted: !audio.muted}}>
-          {#if audio.muted}
-            <FontAwesomeIcon icon={faVolumeOff} />
-          {:else}
-            <FontAwesomeIcon icon={faVolumeHigh} />
-          {/if}
-        </button>
+        <div class="vol">
+          <button class="btn-mute" on:click={toggleMute}>
+            {#if audio.muted || audio.volume <= 0}
+              <FontAwesomeIcon icon={faVolumeOff} />
+            {:else}
+              <FontAwesomeIcon icon={faVolumeHigh} />
+            {/if}
+          </button>
+          <div class="volume-slider-popup">
+            <input type="range" bind:value={audio.volume} on:input={() => audio = {...audio, muted: false}} title="{`${audio.volume}`}" min=0 max=100 />
+            <span>{audio.volume}</span>
+          </div>
+        </div>
         <audio
             src={audio.src}
             bind:muted={audio.muted}
             bind:paused={audio.paused}
             bind:currentTime={audio.currentTime}
-            bind:volume={audio.volume}
+            bind:volume={audioVol}
         />
       </div>
     {/if}
@@ -231,7 +246,7 @@
       border: none;
       margin: 0 2.5px;
       padding: 3px 0;
-      padding-top: calc(3px + 7.5%);
+      padding-top: 25px;
       background: stage_button_background_duo(30%, false);
       user-select: none;
       font-family: inherit;
@@ -290,6 +305,7 @@
       margin: 30px 0 20px;
     }
     div.controls {
+      $buttons-margin: 5px;
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
@@ -298,11 +314,11 @@
         width: 60px;
         height: 40px;
         border: none;
-        border-radius: 40px;
+        border-radius: 20px;
         background-color: stage_button_background(60%);
         color: stage_button_foreground(5%);
         font-size: 20px;
-        margin: 0 5px;
+        margin: 0 $buttons-margin;
         padding: 0 6px;
         cursor: pointer;
         &:hover {
@@ -324,6 +340,62 @@
           margin-left: 0px;
           padding-left: 0;
           width: 54px;
+        }
+      }
+      div.vol {
+        position: relative;
+        // "&:has(button.btn-mute:hover) > .volume-slider-popup" is better, but it doesn't work in current version of firefox without a special flag
+        // "&:hover > div.volume-slider-popup" is a valid alternative as well, but then I'd have to set border-radius here as well
+        button.btn-mute:hover + div.volume-slider-popup, div.volume-slider-popup:hover {
+          display: flex;
+        }
+        .volume-slider-popup {
+          $slider-height: 80px;
+          $slider-width: 8px;
+          position: absolute;
+          left: 0;
+          bottom: 100%;
+          width: calc(100% - $buttons-margin * 3);
+          box-sizing: border-box;
+          padding: 10px 0 5px;
+          margin: 0 $buttons-margin * 1.5 -1px;
+          border-radius: 15px;
+          opacity: 0.8;
+          background-color: stage_button_background(25%);
+          border: 1.5px solid main_outline_color(75%);
+          display: none;
+          flex-direction: column;
+          align-items: center;
+          cursor: pointer;
+          input[type=range] {
+            appearance: none;
+            background-color: color-mix(in srgb, var(--page-fg) 50%, transparent);
+            width: $slider-height;
+            height: $slider-width;
+            margin: calc(($slider-height - $slider-width) / 2) 0;
+            padding: 0;
+            transform: rotate(-90deg);
+            overflow: hidden;
+            // for whatever reason, chrome doesn't like comma-separated selectors with these pseudo-classes, so I can't merge these 2 groups
+            &::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              width: 0;
+              box-shadow: -$slider-height 0 0 $slider-height stage_button_foreground(90%);
+            }
+            &::-moz-range-thumb {
+              border: none;
+              width: 0;
+              box-shadow: -$slider-height 0 0 $slider-height stage_button_foreground(90%);
+            }
+          }
+          span {
+            user-select: none;
+            padding-top: 2px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--page-fg);
+            font-family: Roboto, Oxygen, Ubuntu, 'Segoe UI', 'Open Sans', Cantarell, 'Helvetica Neue', sans-serif;
+          }
         }
       }
     }
