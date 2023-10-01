@@ -3,7 +3,7 @@
   import { faPause, faPlay, faRotateLeft, faVolumeOff, faVolumeHigh, faBars } from "@fortawesome/free-solid-svg-icons";
 
   import HScrollContainer from "$lib/HScrollContainer.svelte";
-  import { Cutscene, Fight, Stage, duties, formatTime } from "$lib/duties";
+  import { Cutscene, Fight, Interaction, Stage, duties, formatTime } from "$lib/duties";
 
   import soundPingQuiet from "$lib/assets/sounds/stop-13692.mp3";
   import soundPingLoud from "$lib/assets/sounds/notification-sound-7062.mp3";
@@ -25,6 +25,7 @@
   let curAudioStep = 0;
   let menuPopupShown = false;
   let onlyCutscenes = false;
+  let mergeCutscenes = false;
 
   function setDuty(key: string) {
     if (!duties.hasOwnProperty(key)) { return; }  // can't use 'keyof typeof duties' as param type because svelte doesn't support TS in HTML
@@ -138,7 +139,26 @@
   $: currentStage = currentDuty === undefined? undefined : currentDuty.stages[curStageIndex];
   $: timeLeftFormatted = formatTime(timeLeft, true);
   $: audioVol = Math.max(Math.min(audio.volume / 100, 1), 0);
-  $: filteredStages = currentDuty?.stages.map((s, i) => (!onlyCutscenes || s instanceof Cutscene)? [s, i] : undefined).filter(a => a != undefined) as Array<[Stage, number]> | undefined;
+  $: {
+    if (currentDuty === undefined) {
+      filteredStages = undefined;
+    } else {
+      let stages: Stage[] = currentDuty.stages;
+      if (mergeCutscenes) {
+        stages = currentDuty.stages.reduce((res, s) => {
+          if (s instanceof Interaction) { return res; }
+          if (s instanceof Cutscene && (res.length > 1 && res[res.length - 1] instanceof Cutscene)) {
+            const oldCs: Cutscene = res[res.length - 1] as Cutscene;
+            res[res.length - 1] = new Cutscene(oldCs.name, oldCs.duration + s.duration, oldCs.color);
+            return res;
+          }
+          res.push(s);
+          return res;
+        }, [] as Stage[]);
+      }
+      filteredStages = stages.map((s, i) => (!onlyCutscenes || s instanceof Cutscene)? [s, i] : undefined).filter(a => a != undefined) as Array<[Stage, number]> | undefined;
+    }
+  }
 </script>
 
 <svelte:window on:click={onClickAnywhere} />
@@ -155,6 +175,7 @@
       <div class="menu-popup" style:display={menuPopupShown? 'block' : 'none'}>
         <ul>
           <li><label><input type="checkbox" bind:checked={onlyCutscenes}><span>Only cutscenes</span></label></li>
+          <li><label><input type="checkbox" bind:checked={mergeCutscenes}><span>Merge adjacent cutscenes<br>(also removes interactions)</span></label></li>
         </ul>
       </div>
     </li>
@@ -183,6 +204,8 @@
       <p class="message">No duty is selected</p>
     {:else if currentStage === undefined}
       <p class="message">No stage is selected</p>
+    {:else if currentStage instanceof Interaction}
+      <p class="message">{currentStage.getSubtitle()}</p>
     {:else if currentStage instanceof Fight}
       <p class="message">Good luck Warrior of Light!</p>
     {:else}

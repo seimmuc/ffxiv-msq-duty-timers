@@ -47,6 +47,8 @@ export abstract class Stage {
       return new Cutscene(obj.name, obj.duration as number, obj.color);
     } else if (obj.type == 'fight') {
       return new Fight(obj.name, obj.subtitle, obj.color);
+    } else if (obj.type == 'interaction') {
+      return new Interaction(obj.name, obj.subtitle, obj.color);
     }
   }
 }
@@ -76,6 +78,8 @@ export class Fight extends Stage {
       return this.subtitle;
   }
 }
+
+export class Interaction extends Fight {}
 
 type StageObj = {type: 'cutscene' | 'fight', name: string, color?: string, duration?: number, subtitle?: string};
 type DutyObj = {slug: string, name: string, stages: StageObj[]};
