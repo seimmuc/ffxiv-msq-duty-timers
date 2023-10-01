@@ -6,20 +6,26 @@
       {
         "type": "cutscene",
         "name": "Intro",
-        "duration": 10,
-        "color": "#f00"
+        "duration": 20,
+        "color": "lightblue"
       },
       {
         "type": "fight",
         "name": "Fight",
-        "subtitle": "be careful here",
-        "color": "blue"
+        "subtitle": "clear mobs",
+        "color": "orange"
       },
       {
         "type": "cutscene",
-        "name": "Ending",
-        "color": "green",
-        "duration": 20
+        "name": "Cutscene",
+        "duration": 110,
+        "color": "blue"
+      },
+      {
+        "type": "fight",
+        "name": "Boss",
+        "subtitle": "Livia sas Junius",
+        "color": "red"
       }
     ]
   },
@@ -30,14 +36,80 @@
       {
         "type": "cutscene",
         "name": "Intro",
-        "duration": 10,
-        "color": "#f00"
+        "duration": 60,
+        "color": "lightblue"
       },
       {
         "type": "fight",
         "name": "Fight",
-        "subtitle": "be careful here",
+        "subtitle": "clear mobs",
+        "color": "orange"
+      },
+      {
+        "type": "cutscene",
+        "name": "Talk to Gaius",
+        "duration": 180,
         "color": "blue"
+      },
+      {
+        "type": "fight",
+        "name": "Boss",
+        "subtitle": "magitek colossus",
+        "color": "red"
+      },
+      {
+        "type": "fight",
+        "name": "Fight",
+        "subtitle": "ride magitek armor",
+        "color": "orange"
+      },
+      {
+        "type": "cutscene",
+        "name": "Cutscene",
+        "duration": 100,
+        "color": "blue"
+      },
+      {
+        "type": "interaction",
+        "name": "Short Walk",
+        "subtitle": "Walk to boss arena",
+        "color": "green"
+      },
+      {
+        "type": "cutscene",
+        "name": "Cutscene",
+        "duration": 235,
+        "color": "blue"
+      },
+      {
+        "type": "fight",
+        "name": "Boss",
+        "subtitle": "fight Nero",
+        "color": "red"
+      },
+      {
+        "type": "cutscene",
+        "name": "Cutscene",
+        "duration": 95,
+        "color": "blue"
+      },
+      {
+        "type": "interaction",
+        "name": "Short Walk",
+        "subtitle": "Trigger the elevator",
+        "color": "green"
+      },
+      {
+        "type": "cutscene",
+        "name": "Cutscene",
+        "duration": 275,
+        "color": "blue"
+      },
+      {
+        "type": "fight",
+        "name": "Boss",
+        "subtitle": "fight Gaius",
+        "color": "red"
       }
     ]
   },
