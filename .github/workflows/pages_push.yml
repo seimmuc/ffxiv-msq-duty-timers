@@ -1,0 +1,65 @@
+# This workflow is adapted from default Github template and one available on https://kit.svelte.dev/docs/adapter-static
+
+name: Deploy SvelteKit app to GitHub Pages
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build_site:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: build
+        env:
+          BASE_PATH: '/your-repo-name'
+        run: |
+          npm run build
+          touch build/.nojekyll
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # this should match the `pages` option in your adapter-static options
+          path: 'build/'
+
+  deploy:
+    needs: build_site
+    if: ${{ success() }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v1
+        with:
+          timeout: '60000'
