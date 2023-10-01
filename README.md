@@ -1,3 +1,5 @@
+[![Deploy to GitHub Pages](https://github.com/seimmuc/ffxiv-msq-duty-timers/actions/workflows/pages_push.yml/badge.svg)](https://github.com/seimmuc/ffxiv-msq-duty-timers/actions/workflows/pages_push.yml)
+
 # ffxiv-msq-duty-timers
 A simple page with multiple timers corresponding to cutscenes in MSQ duties in Final Fantasy XIV. This project is a SvelteKit app (created using [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte)).
 
