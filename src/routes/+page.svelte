@@ -1,6 +1,7 @@
 <script lang="ts">
   import { FontAwesomeIcon } from "@fortawesome/svelte-fontawesome";
   import { faPause, faPlay, faRotateLeft, faVolumeOff, faVolumeHigh, faBars } from "@fortawesome/free-solid-svg-icons";
+  import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
   import HScrollContainer from "$lib/HScrollContainer.svelte";
   import { Cutscene, Fight, Interaction, Stage, duties, formatTime } from "$lib/duties";
@@ -9,6 +10,11 @@
   import soundPingLoud from "$lib/assets/sounds/notification-sound-7062.mp3";
 	import { onMount } from "svelte";
   // import soundPingLoud2 from "$static/assets/sounds/soft-alert-81627.mp3";
+
+  // TODO?: settings to pick different sounds and change sound timing
+  // const notypecheck = (x:any)=>x;   // hacky ts fix: https://github.com/sveltejs/language-tools/issues/1026#issuecomment-1002839154
+
+  const githubUrl = 'https://github.com/seimmuc/ffxiv-msq-duty-timers';
 
   let stageSelectionWidth: number = 0;
   let menuRoot: HTMLLIElement | undefined = undefined;
@@ -174,8 +180,9 @@
       <button class="menu-btn" on:click={() => menuPopupShown = !menuPopupShown}><FontAwesomeIcon icon={faBars} /></button>
       <div class="menu-popup" style:display={menuPopupShown? 'block' : 'none'}>
         <ul>
-          <li><label><input type="checkbox" bind:checked={onlyCutscenes}><span>Only cutscenes</span></label></li>
-          <li><label><input type="checkbox" bind:checked={mergeCutscenes}><span>Merge adjacent cutscenes<br>(also removes interactions)</span></label></li>
+          <li><label><input type="checkbox" bind:checked={onlyCutscenes}><span class="setting-label">Only cutscenes</span></label></li>
+          <li><label><input type="checkbox" bind:checked={mergeCutscenes}><span class="setting-label">Merge adjacent cutscenes<br>(also removes interactions)</span></label></li>
+          <li><a href={githubUrl} class="menu-link"><FontAwesomeIcon icon={faGithub} /><span>Github repo</span></a></li>
         </ul>
       </div>
     </li>
@@ -332,19 +339,33 @@
     z-index: 10;
     ul {
       list-style: none;
-      padding: 10px;
+      padding: 4px;
       display: grid;
-      row-gap: 12px;
-      column-gap: 6px;
+      row-gap: 2px;
       width: max-content;
       li, label {
         display: contents;
       }
-      input {
+      input[type=checkbox] {
         grid-column: 1;
+        margin-left: 9px;
+        margin-right: 0;
       }
-      span {
+      .setting-label {
         grid-column: 2;
+        padding: 6px 9px;
+      }
+      a.menu-link {
+        grid-column: span 2;
+        color: inherit;
+        text-decoration: inherit;
+        padding: 6px 9px;
+        span {
+          margin-left: 8px;
+        }
+        &:hover {
+          background-color: main_outline_color(15%);
+        }
       }
     }
   }
