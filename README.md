@@ -18,3 +18,7 @@ npm run dev -- --host
 npm run build
 ```
 You can then preview the production build with `npm run preview`.
+
+
+# Credit
+- Favicon by Michi (https://twitter.com/MichiOtakuStu, https://ko-fi.com/michiotakustu)
