@@ -1,0 +1,25 @@
+{
+  "short_name": "MSQ Timers",
+  "name": "FFXIV MSQ Duty Timers",
+  "description": "A simple page with ffxiv msq duty cutscene timers",
+  "icons": [
+    {
+      "src": "/icon_192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon_512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "id": "ffxiv-msq-duty-timers",
+  "start_url": "./",
+  "background_color": "#292929",
+  "theme_color": "#292929",
+  "display": "standalone",
+  "scope": "./",
+  "prefer_related_applications": false,
+  "related_applications": []
+}

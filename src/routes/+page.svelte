@@ -175,6 +175,7 @@
   <title>FFXIV MSQ Duty Timers</title>
   <meta name="description" content="A simple page with multiple timers corresponding to cutscenes in MSQ duties in Final Fantasy XIV.">
   <meta name="theme-color" content="#292929" />
+  <link rel="manifest" href="/manifest.webmanifest">
 </svelte:head>
 
 <svelte:window on:click={onClickAnywhere} />
