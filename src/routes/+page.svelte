@@ -9,10 +9,8 @@
   import soundPingQuiet from "$lib/assets/sounds/stop-13692.mp3";
   import soundPingLoud from "$lib/assets/sounds/notification-sound-7062.mp3";
 	import { onMount } from "svelte";
-  // import soundPingLoud2 from "$static/assets/sounds/soft-alert-81627.mp3";
 
   // TODO?: settings to pick different sounds and change sound timing
-  // const notypecheck = (x:any)=>x;   // hacky ts fix: https://github.com/sveltejs/language-tools/issues/1026#issuecomment-1002839154
 
   const githubUrl = 'https://github.com/seimmuc/ffxiv-msq-duty-timers';
 
@@ -173,6 +171,12 @@
   }
 </script>
 
+<svelte:head>
+  <title>FFXIV MSQ Duty Timers</title>
+  <meta name="description" content="A simple page with multiple timers corresponding to cutscenes in MSQ duties in Final Fantasy XIV.">
+  <meta name="theme-color" content="#292929" />
+</svelte:head>
+
 <svelte:window on:click={onClickAnywhere} />
 
 <main>
@@ -183,7 +187,7 @@
       </li>
     {/each}
     <li bind:this={menuRoot} class="no-grow">
-      <button class="menu-btn" on:click={() => menuPopupShown = !menuPopupShown}><FontAwesomeIcon icon={faBars} /></button>
+      <button class="menu-btn" aria-label="Menu" on:click={() => menuPopupShown = !menuPopupShown}><FontAwesomeIcon icon={faBars} /></button>
       <div class="menu-popup" style:display={menuPopupShown? 'block' : 'none'}>
         <ul>
           <li><label><input type="checkbox" bind:checked={onlyCutscenes} on:change={onStageFiltersUpdate}><span class="setting-label">Only cutscenes</span></label></li>
