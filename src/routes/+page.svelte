@@ -9,6 +9,7 @@
   import soundPingQuiet from "$lib/assets/sounds/stop-13692.mp3";
   import soundPingLoud from "$lib/assets/sounds/notification-sound-7062.mp3";
 	import { onMount } from "svelte";
+	import { base } from "$app/paths";
 
   // TODO?: settings to pick different sounds and change sound timing
 
@@ -175,7 +176,7 @@
   <title>FFXIV MSQ Duty Timers</title>
   <meta name="description" content="A simple page with multiple timers corresponding to cutscenes in MSQ duties in Final Fantasy XIV.">
   <meta name="theme-color" content="#292929" />
-  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="manifest" href="{base}/manifest.webmanifest">
 </svelte:head>
 
 <svelte:window on:click={onClickAnywhere} />
