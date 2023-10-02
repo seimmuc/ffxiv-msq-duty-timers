@@ -112,6 +112,10 @@
     lsSet('volume', audio.volume.toString());
     lsSet('muted', 'false');
   }
+  function onStageFiltersUpdate() {
+    lsSet('onlyCutscenes', onlyCutscenes.toString());
+    lsSet('mergeCutscenes', mergeCutscenes.toString());
+  }
 
   function onClickAnywhere(e: MouseEvent) {
     if (menuPopupShown && menuRoot !== undefined && e.target instanceof Node && !menuRoot.contains(e.target)) {
@@ -136,6 +140,8 @@
   onMount(() => {
     lsIfExists('muted', m => audio.muted = m !== 'false');
     lsIfExists('volume', v => audio.volume = parseFloat(v));
+    lsIfExists('onlyCutscenes', oc => onlyCutscenes = oc === 'true');
+    lsIfExists('mergeCutscenes', mc => mergeCutscenes = mc === 'true');
     if (audio.muted) {
       audio = {...audio, volume: 0, pVolume: audio.volume};
     }
@@ -180,8 +186,8 @@
       <button class="menu-btn" on:click={() => menuPopupShown = !menuPopupShown}><FontAwesomeIcon icon={faBars} /></button>
       <div class="menu-popup" style:display={menuPopupShown? 'block' : 'none'}>
         <ul>
-          <li><label><input type="checkbox" bind:checked={onlyCutscenes}><span class="setting-label">Only cutscenes</span></label></li>
-          <li><label><input type="checkbox" bind:checked={mergeCutscenes}><span class="setting-label">Merge adjacent cutscenes<br>(also removes interactions)</span></label></li>
+          <li><label><input type="checkbox" bind:checked={onlyCutscenes} on:change={onStageFiltersUpdate}><span class="setting-label">Only cutscenes</span></label></li>
+          <li><label><input type="checkbox" bind:checked={mergeCutscenes} on:change={onStageFiltersUpdate}><span class="setting-label">Merge adjacent cutscenes<br>(also removes interactions)</span></label></li>
           <li><a href={githubUrl} class="menu-link"><FontAwesomeIcon icon={faGithub} /><span>Github repo</span></a></li>
         </ul>
       </div>
