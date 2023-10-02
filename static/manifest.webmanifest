@@ -4,12 +4,12 @@
   "description": "A simple page with ffxiv msq duty cutscene timers",
   "icons": [
     {
-      "src": "/icon_192.png",
+      "src": "./icon_192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/icon_512.png",
+      "src": "./icon_512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

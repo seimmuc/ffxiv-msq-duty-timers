@@ -294,7 +294,7 @@
   }
 
   ul.duty-list {
-    $button-vpadding: 10px;
+    $button-vpadding: 20px;
     $select-border: 2px;
     user-select: none;
     list-style: none;

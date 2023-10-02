@@ -97,7 +97,8 @@
   }
   .arrow-btn {
     flex-shrink: 0;
-    min-width: fit-content;
+    width: fit-content;
+    min-width: 48px;
     border: none;
     padding: 0;
     background-color: transparent;
